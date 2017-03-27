@@ -1,0 +1,8 @@
+1. Update application.properties file with your database information
+
+spring.datasource.url=jdbc:<databaseName>://<url>:<port>/<dbname>
+spring.datasource.username=<username>
+spring.datasource.password=<password>
+
+2.  Right click on following Application.java file and click on Run "Application"
+Path: icechallenge\src\main\java\com\ice\challenge\Application.java
