@@ -13,20 +13,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
+@CrossOrigin(origins = "http://localhost:8000")
 @RequestMapping(path ="/stock")
 public class StockController {
 
     @Autowired
     private StockService stockService;
-
-    @RequestMapping(value = "/{stockSymbol}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(value = HttpStatus.OK)
-    public @ResponseBody StockDto findOne(@PathVariable("stockSymbol") String stockSymbol) {
-        if (stockSymbol != null) {
-            return ConversionUtil.internalToExternal(stockService.findOne(stockSymbol));
-        } else
-            return null;
-    }
 
     @RequestMapping(value="/getAll", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.OK)
@@ -36,8 +28,12 @@ public class StockController {
 
     @RequestMapping(path = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public @ResponseBody StockDto create(@RequestBody StockDto stockDto) {
-        return ConversionUtil.internalToExternal(stockService.create(ConversionUtil.externalToInternal(stockDto)));
+    public @ResponseBody StockDto create(@RequestBody StockDto stockDto) throws Exception {
+        if (!stockDto.getStockSymbol().isEmpty() && stockService.findOne(stockDto.getStockSymbol()) == null) {
+            return ConversionUtil.internalToExternal(stockService.create(ConversionUtil.externalToInternal(stockDto)));
+        } else {
+            throw new Exception("Resource already exist with " +stockDto.getStockSymbol());
+        }
     }
 
     @RequestMapping(value = "/{stockSymbol}", method = RequestMethod.DELETE)
@@ -45,7 +41,6 @@ public class StockController {
     public void deleteById(@PathVariable("stockSymbol") String stockSymbol) {
         stockService.delete(stockSymbol);
     }
-
 }
 
 
